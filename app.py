@@ -4,9 +4,13 @@ from pymongo.server_api import ServerApi
 from bson.objectid import ObjectId
 import bcrypt
 import credentials
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 # Create a new client and connect to the server
-client = MongoClient(credentials.uri, server_api=ServerApi('1'))
+client = MongoClient(os.getenv("MONGO_URI"), server_api=ServerApi('1'))
 # add your mongodb uri to your credentials.py file!
 # uri = "your_mongo_db_uri"
 
@@ -21,7 +25,7 @@ except Exception as e:
     print(e)
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'testing'
+app.config['SECRET_KEY'] = os.getenv("FLASK_SECRET_KEY")
 
 
 @app.route('/')
