@@ -1,76 +1,193 @@
+:root {
+  --lime: #CCFF00;
+  --dark: #1A1A1A;
+  --white: #FFFFFF;
+  --light-lime: rgba(204, 255, 0, 0.1);
+}
 
 body {
-
-  color: #444;
-  background-color: #C6D8AF;
-
-}
- .product {
-
-            margin: auto;
-            background-color: #f2f2f2;
-            width: 80%;
-
-        }
- .content {
-
-            margin: auto;
-            background-color: #f2f2f2;
-            width: 80%;
-        }
-
- .title {
-    text-align: center;
-    border: 3px solid green;
-     width: 80%;
-      margin-left: 9.8%;
-
-}
- a {
-  color: black;
-
-}
- a:visited {
-  background-color: cyan;
+  background-color: var(--white);
+  color: var(--dark);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
+  transition: background-color 0.3s ease;
 }
 
-/*
- * Formatting the header area
-
-/* The navigation bar */
+/* Navbar Styling */
 .navbar {
-  margin-left: 9.5%;
-
-  overflow: hidden;
-  background-color: #333;
+  background-color: var(--white);
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+  margin: 0;
+  padding: 0.5rem 10%;
   position: fixed;
   top: 0;
-  width: 80%;
+  width: 100%;
+  z-index: 1000;
+  transition: all 0.3s ease;
 }
 
-/* Links inside the navbar */
 .navbar a {
-  float: left;
-  display: block;
-  color: #f2f2f2;
-  text-align: center;
-  padding: 14px 16px;
+  color: var(--dark);
+  display: inline-block;
+  font-weight: 500;
+  margin: 0 1rem;
+  padding: 0.5rem 1rem;
   text-decoration: none;
+  transition: all 0.2s ease;
+  position: relative;
 }
 
-/* Change background on mouse-over */
-.navbar a:hover {
-  background: #ddd;
-  color: black;
+.navbar a::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: 0;
+  left: 0;
+  background-color: var(--lime);
+  transition: width 0.3s ease;
 }
 
-/* Main content */
+.navbar a:hover::after {
+  width: 100%;
+}
+
+/* Main Content */
 .main {
-  margin-top: 70px; /* Add a top margin to avoid content overlay */
+  margin-top: 100px;
+  padding: 0 10%;
+}
+
+/* Post Styling */
+.post {
+  background-color: var(--white);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  margin: 2rem auto;
+  padding: 2rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  width: 100%;
+  max-width: 800px;
+}
+
+.post:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* Title Styling */
+.title {
+  border: none;
+  border-left: 4px solid var(--lime);
+  margin: 2rem auto;
+  padding: 1rem 2rem;
+  text-align: left;
+  width: 100%;
+  max-width: 800px;
+  background-color: var(--light-lime);
+  border-radius: 0 8px 8px 0;
 }
 
 h1 {
-  color: #333333;
+  color: var(--dark);
+  font-size: 2.5rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  margin: 2rem 0;
   text-align: center;
 }
 
+/* Form Styling */
+form {
+  margin: 2rem auto;
+  max-width: 800px;
+}
+
+input[type="text"],
+textarea {
+  background-color: var(--white);
+  border: 2px solid rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  font-size: 1rem;
+  margin: 0.5rem 0;
+  padding: 1rem;
+  transition: border-color 0.2s ease;
+  width: 100%;
+}
+
+input[type="text"]:focus,
+textarea:focus {
+  border-color: var(--lime);
+  outline: none;
+}
+
+button[type="submit"],
+input[type="submit"] {
+  background-color: var(--dark);
+  border: none;
+  border-radius: 8px;
+  color: var(--white);
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  margin: 1rem 0;
+  padding: 0.8rem 1.5rem;
+  transition: all 0.2s ease;
+}
+
+button[type="submit"]:hover,
+input[type="submit"]:hover {
+  background-color: var(--lime);
+  color: var(--dark);
+}
+
+/* Animation Classes */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease forwards;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .navbar {
+    padding: 0.5rem 5%;
+  }
+  
+  .main {
+    padding: 0 5%;
+  }
+  
+  .post,
+  .title {
+    width: 100%;
+    margin: 1rem auto;
+    padding: 1rem;
+  }
+}
+
+.post-content {
+  line-height: 1.8;
+  font-size: 1.1rem;
+}
+
+.post-content p {
+  margin: 1.5rem 0;
+}
+
+@media (max-width: 768px) {
+  .post-content {
+      font-size: 1rem;
+  }
+}

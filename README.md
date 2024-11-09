@@ -1,3 +1,4 @@
+
 # Simple Blog Web Application with Flask and MongoDB
 
 A basic blog web application created using Flask, MongoDB, and Python. This application allows users to read, create, edit, and delete blog posts, as well as register and log in as administrators.
@@ -16,7 +17,7 @@ Before you begin, ensure you have met the following requirements:
 
 - Python 3.x installed.
 - MongoDB database set up.
-- Required Python packages installed. You can install them using the `requirements.txt` file.
+- Required Python packages installed. You can install them using the `requirements.txt` file (pip install -r requirements.txt).
 
 ## Usage
 
@@ -39,4 +40,5 @@ This project is licensed under the [MIT License](LICENSE).
 - Utilizes MongoDB for data storage.
 - Implements user authentication and authorization.
 - Demonstrates CRUD (Create, Read, Update, Delete) operations for blog posts.
+
 

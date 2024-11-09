@@ -2,13 +2,26 @@
 <html lang="en">
   {% extends "header.html" %}
 {% block content %}
-   <body>
-          {% for product in product %}
-  <div class="product">
+  <body>
+    <form method="POST" action="/process">
+      <input type="text" name="search_query" placeholder="Search Posts" size="70px" required>
+      <input type="submit" value="Search">
+    </form>
+  
+    <div class="search-results">
+        {% for result in search_results %}
+          <div class="post">
+              <h3>{{ result.title }}</h3>
+              <p>{{ result.content }}</p>
+          </div>
+        {% endfor %}
+    </div>
+          {% for post in posts %}
+  <div class="post">
 
-            <h2><a href="{{ url_for('posts', name=product['name']) }}">{{ product['name'] }}</a></h2>
+            <h2>{{ post['title'] }}</h2>
             <br>
-            {{ product['content'] }}
+            <p>{{ post['content'] }}</p>
     </div>
          {% endfor %}
    </body>

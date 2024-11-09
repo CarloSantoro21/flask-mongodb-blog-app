@@ -10,9 +10,9 @@ client = MongoClient(credentials.uri, server_api=ServerApi('1'))
 # add your mongodb uri to your credentials.py file!
 # uri = "your_mongo_db_uri"
 
-db = client.Cluster0
-product = db.product
-user_log = db.login
+db = client.db
+posts = db.posts
+users = db.users
 # Send a ping to confirm a successful connection
 try:
     client.admin.command('ping')
@@ -24,112 +24,119 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'testing'
 
 
-@app.route('/', methods=("GET", "POST"))
+@app.route('/')
 def index():
-    if request.method == 'POST':
-        render_template('posts.html')
-        print("test")
-
-    all_posts = product.find()
-
-    return render_template('index.html', product=all_posts)
+    all_posts = posts.find()
+    return render_template('index.html', posts=all_posts)
 
 
 @app.route('/admin', methods=("GET", "POST"))
 def admin():
-    if 'username' in session:
+    if 'username' in session and session['username'] == 'gerardo':
         if request.method == 'POST':
-            content = request.form['name']
-            degree = request.form['content']
-            product.insert_one({'name': content, 'content': degree})
+            title = request.form['title']
+            content = request.form['content']
+            posts.insert_one({'title': title, 'content': content})
             return redirect(url_for('admin'))
 
-        all_posts = product.find()
-        return render_template('admin.html', product=all_posts, username=session['username'])
+        all_posts = posts.find()
+        return render_template('admin.html', posts=all_posts, username=session['username'])
 
     else:
         return redirect(url_for('login'))
 
 
-@app.route("/posts", methods=("GET", "POST"))
-def posts():
-    name = request.args.get('name')
-    query = {"name": name}
-    content = product.find(query)
-    print(query)
-    search_results = [result for result in content]
-    return render_template('posts.html', search_results=search_results)
+@app.route("/post", methods=("GET", "POST"))
+def view_posts():
+    title = request.args.get('title')
+    query = {"title": title}
+    content = posts.find_one(query)
+    if content:
+        return render_template('posts.html', content=content)
+    else:
+        return "Post no encontrado", 404
 
 
 @app.route('/<id>/delete/', methods=("GET", "POST"))
 def delete(id):
-    product.delete_one({"_id": ObjectId(id)})
+    posts.delete_one({"_id": ObjectId(id)})
     return redirect(url_for('admin'))
 
 
 @app.route('/<id>/edit/', methods=("GET", "POST"))
 def edit(id):
-    name = request.form['name']
-    content = request.form['content']
-    product.update_one({"_id": ObjectId(id)}, {'$set': {'name': name, 'content': content}})
-    return redirect(url_for('admin'))
+    if 'username' in session and session['username'] == 'gerardo':
+        if request.method == 'POST':
+            title = request.form['title']
+            content = request.form['content']
+            posts.update_one({"_id": ObjectId(id)}, {'$set': {'title': title, 'content': content}})
+            return redirect(url_for('admin'))
+        post = posts.find_one({"_id": ObjectId(id)})
+        return render_template('edit.html', post=post)
+    return redirect(url_for('login'))
 
 
 @app.route('/process', methods=['POST'])
 def process():
-    find = request.form.get('search_query')
-    query = {"name": find}
-    results = product.find(query)
+    search_query = request.form.get('search_query')
+    
+    query = {"title": {"$regex": search_query, "$options": "i"}}
+    
+    results = posts.find(query)
 
     search_results = [result for result in results]
 
     return render_template('search_results.html', search_results=search_results)
 
-
-def create_hashed_password(password):
-    encoded = password.encode('utf-8')
-    salt = bcrypt.gensalt(rounds=12)
-    hashed = bcrypt.hashpw(encoded, salt)
-    return hashed
-
-
 @app.route('/login', methods=("GET", "POST"))
 def login():
     if request.method == 'POST':
+        print("=== Login Attempt ===")
         username = request.form.get('username')
         password = request.form.get('password')
-        decoding = password.encode('utf-8')
-        stored_password = user_log.find_one({'username': username})
+        print(f"Login attempt for username: {username}")
 
-        if stored_password and bcrypt.checkpw(decoding, stored_password['password']):
-            print("match")
-            session['username'] = username
-            return redirect(url_for('admin'))
-        else:
-            print("does not match")
-            return render_template('login.html')
+        if not username or not password:
+            print("Error: Missing username or password")
+            return render_template('login.html', error="Please fill in all fields")
 
-    else:
-        return render_template('login.html')
+        stored_user = users.find_one({'username': username})
+        if not stored_user:
+            print(f"Error: User {username} not found in database")
+            return render_template('login.html', error="Invalid credentials")
 
+        if username != 'gerardo':
+            print(f"Error: Attempted login with non-gerardo user: {username}")
+            return render_template('login.html', error="Invalid credentials")
 
-@app.route('/signup', methods=("GET", "POST"))
-def signup():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
+        try:
+            # Obtener la contraseña almacenada y asegurarnos de que sea bytes
+            stored_password = stored_user['password']
+            
+            # Si es un string que comienza con b'$2b$', convertirlo a bytes
+            if isinstance(stored_password, str):
+                if stored_password.startswith("b'") and stored_password.endswith("'"):
+                    # Eliminar b'' y evaluar como string literal
+                    stored_password = eval(stored_password)
+                else:
+                    stored_password = stored_password.encode('utf-8')
+            
+            # Verificar la contraseña
+            if bcrypt.checkpw(password.encode('utf-8'), stored_password):
+                print("Success: Password match for user 'gerardo'")
+                session['username'] = username
+                return redirect(url_for('admin'))
+            else:
+                print("Error: Password mismatch for user 'gerardo'")
+                return render_template('login.html', error="Invalid credentials")
+        except Exception as e:
+            print(f"Error during password verification: {str(e)}")
+            return render_template('login.html', error="An error occurred")
+    
+    print("=== Login Page Accessed ===")
+    return render_template('login.html')
 
-        if len(password) >= 7:
-            hashed = create_hashed_password(password)
-            print(hashed)
-            user_log.insert_one({'username': username, 'password': hashed})
-            return redirect(url_for('admin'))
-        else:
-            return render_template('signup.html')
-    else:
-        return render_template('signup.html')
-
-
+    
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():
     session.pop('username', None)

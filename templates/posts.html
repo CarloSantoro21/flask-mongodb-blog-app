@@ -3,21 +3,21 @@
 {% extends "header.html" %}
 {% block content %}
 <body>
-<div class="title">
+<div class="title fade-in">
     {% for result in search_results %}
-   <h1>{{ result.name }}</h1>
+    <h1>{{ result.title }}</h1>
 </div>
-    <div class="product">
+<div class="post fade-in">
     <table>
         <tr>
             <th>Content:</th>
         </tr>
-            <tr>
-                <td>{{ result.content }}</td>
-            </tr>
+        <tr>
+            <td>{{ result.content }}</td>
+        </tr>
         {% endfor %}
     </table>
     </div>
 </body>
 </html>
- {% endblock %}
+{% endblock %}
