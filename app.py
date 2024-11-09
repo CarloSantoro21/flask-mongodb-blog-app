@@ -3,7 +3,6 @@ from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from bson.objectid import ObjectId
 import bcrypt
-import credentials
 from dotenv import load_dotenv
 import os
 
