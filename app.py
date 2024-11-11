@@ -91,6 +91,7 @@ def process():
 
     return render_template('search_results.html', search_results=search_results)
 
+
 @app.route('/login', methods=("GET", "POST"))
 def login():
     if request.method == 'POST':
